@@ -33,3 +33,32 @@ sys9 = series(sys3, g6);
 sys10 = series(sys9, sys6);
 final_X2 = feedback(g1, sys10);
 X2_over_u = minreal(final_X2);
+
+%%%%%%%%% req3 : check stability %%%%%%%%%%%
+X1_poles = real(pole(X1_over_u));
+X2_poles = real(pole(X2_over_u));
+
+flag_x1 = 0;
+%%%%%%%%% check stability for X1 %%%%%%%%%%%
+for i = 1:size(X1_poles)
+    if(X1_poles(i) >= 0)
+        flag_x1 = 1;
+        break;
+    end
+end
+%%%%%%%%% check stability for X2 %%%%%%%%%%%
+flag_x2 = 0;
+for i = 1:size(X2_poles)
+    if(X1_poles(i) >= 0)
+        flag_x2 = 1;
+        break;
+    end
+end
+
+if(flag_x1 == 0 && flag_x2 == 0)
+    disp('System is stable.');
+else
+disp('System is not stable.');
+end
+
+
