@@ -61,4 +61,12 @@ else
 disp('System is not stable.');
 end
 
+%%%%%%%%%%%%%% req4: Simulation for input %%%%%%%%%%%%%%%%%
+t = 0:100;      % Define a time vector
+u = 1*heaviside(t); % Define the input force as a step function
+lsim(X1_over_u * 100, u, t);
+grid on
+hold on
+lsim(X2_over_u * 110, u, t);
+grid on
 
