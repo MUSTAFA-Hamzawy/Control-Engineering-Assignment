@@ -100,15 +100,10 @@ branch_1 = series(final_X2, u);
 result = feedback(branch_1, 1);
 result_tf = minreal(result);
 
-
-
-
 figure(5);
 opt=stepDataOptions('InputOffset',0,'StepAmplitude',2);
 p3=stepplot(result_tf, opt);
 setoptions(p3,'RiseTimeLimits',[0,1]);
-
-
 
 % Info
 info3 = stepinfo(result_tf);
@@ -119,5 +114,61 @@ disp(info3);
 [y,t] = step(result_tf);
 sserror1 = abs(1- y(end)); %get the steady state error
 fprintf('Steady State error %.3f\n', sserror1);
+
+%%%%%%%%%%%%%% req 8 %%%%%%%%%%%%%%%%%
+%{
+
+P1 = tf(1, 1);
+P2 = tf(10, 1);
+P3 = tf(100, 1);
+P4 = tf(1000, 1);
+P_values = [P1 P2 P3 P4];
+for i = 1:3
+   %%%%%%  Connecting the blocks %%%%%%%%
+% T2 %
+sys1 = parallel(g2, g3);
+sys2 = parallel(sys1, g4);
+sys3 = parallel(sys2, g5);
+
+% T1 %
+sys4 = parallel(g7, g8);
+sys5 = parallel(sys4, g9);
+sys6 = parallel(sys5, g10);
+
+sys7 = series(P_values(i), g1);
+sys8 = series(sys7, sys3);
+sys9 = series(sys8, g6);
+
+%%%%%%%%%% X1 %%%%%%%%%
+final_X1 = feedback(sys9, sys6 ,+1);
+X1_over_u = minreal(final_X1);
+%%%%%%%%%% X2 %%%%%%%%%
+sys9 = series(sys3, g6);
+sys10 = series(sys9, sys6);
+final_X2 = feedback(g1, sys10, +1);
+X2_over_u = minreal(final_X2);
+
+figure;
+pzmap(X1_over_u);
+figure;
+pzmap(X2_over_u);
+
+%%% simulate %%
+figure;
+t = 0:50;      % Define a time vector
+title('X1');
+p1=stepplot(X1_over_u, t);
+setoptions(p1,'RiseTimeLimits',[0,1]);
+figure;
+title('X2');
+p2=stepplot(X2_over_u, t);
+setoptions(p2,'RiseTimeLimits',[0,1]);
+
+
+end
+
+%}
+
+
 
 
