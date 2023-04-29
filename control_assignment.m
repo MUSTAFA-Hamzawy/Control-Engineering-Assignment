@@ -71,22 +71,53 @@ pzmap(X2_over_u);
 
 %%%%%%%%%%%%%% req4: Simulation for input %%%%%%%%%%%%%%%%%
 figure(3)
-t = 0:150;      % Define a time vector
+t = 0:220;      % Define a time vector
 
 p1=stepplot(X1_over_u, t);
 setoptions(p1,'RiseTimeLimits',[0,1]);
 figure(4)
 p2=stepplot(X2_over_u, t);
 setoptions(p2,'RiseTimeLimits',[0,1]);
-
-info = stepinfo(X1_over_u);
+% QUESTION: Do we need to draw the two TF once, or separated ?
+info1 = stepinfo(X1_over_u);
+info2 = stepinfo(X2_over_u);
+fprintf('Info 1:');
+disp(info1)
+fprintf('Info 2:');
+disp(info2)
 
 % Steady State error
 [y,t] = step(X1_over_u);
-sserror1 = abs(y(end)); %get the steady state error
+sserror1 = abs(1- y(end)); %get the steady state error
 fprintf('Steady State error X1: %.3f\n', sserror1);
 [y2,t2] = step(X2_over_u);
-sserror2 = abs(y2(end)); %get the steady state error
+sserror2 = abs(1- y2(end)); %get the steady state error
 fprintf('Steady State error X2: %.3f\n', sserror2);
 
-%%%%%%%%%%%%%% req5,6,7: Simulation for input %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%% req 5,6,7 %%%%%%%%%%%%%%%%%
+u  = tf(-1, 1);
+branch_1 = series(final_X2, u);
+result = feedback(branch_1, 1);
+result_tf = minreal(result);
+
+
+
+
+figure(5);
+opt=stepDataOptions('InputOffset',0,'StepAmplitude',2);
+p3=stepplot(result_tf, opt);
+setoptions(p3,'RiseTimeLimits',[0,1]);
+
+
+
+% Info
+info3 = stepinfo(result_tf);
+fprintf('Info 3:');
+disp(info3);
+
+% Steady State error
+[y,t] = step(result_tf);
+sserror1 = abs(1- y(end)); %get the steady state error
+fprintf('Steady State error %.3f\n', sserror1);
+
+
