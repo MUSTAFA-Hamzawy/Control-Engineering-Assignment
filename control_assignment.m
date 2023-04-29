@@ -25,15 +25,15 @@ sys7 = series(g1, sys3);
 sys8 = series(sys7, g6);
 
 %%%%%%%%%% X1 %%%%%%%%%
-final_X1 = feedback(sys8, sys6);
+final_X1 = feedback(sys8, sys6 , +1);
 X1_over_u = minreal(final_X1);
-
+X1_over_u = -1 * X1_over_u;   % QUESTION: WHY !!!!!!!!!!
 %%%%%%%%%% X2 %%%%%%%%%
 sys9 = series(sys3, g6);
 sys10 = series(sys9, sys6);
-final_X2 = feedback(g1, sys10);
+final_X2 = feedback(g1, sys10, +1);
 X2_over_u = minreal(final_X2);
-
+X2_over_u = -1 * X2_over_u;   % QUESTION: WHY !!!!!!!!!!
 %%%%%%%%% req3 : check stability %%%%%%%%%%%
 X1_poles = real(pole(X1_over_u));
 X2_poles = real(pole(X2_over_u));
@@ -61,12 +61,32 @@ else
 disp('System is not stable.');
 end
 
-%%%%%%%%%%%%%% req4: Simulation for input %%%%%%%%%%%%%%%%%
-t = 0:100;      % Define a time vector
-u = 1*heaviside(t); % Define the input force as a step function
-lsim(X1_over_u * 100, u, t);
-grid on
-hold on
-lsim(X2_over_u * 110, u, t);
-grid on
+%figure(1)
+pzmap(X1_over_u);
+%[wn1,z1] = damp(X1_over_u);
 
+figure(2)
+pzmap(X2_over_u);
+%[wn2,z2] = damp(X2_over_u);
+
+%%%%%%%%%%%%%% req4: Simulation for input %%%%%%%%%%%%%%%%%
+figure(3)
+t = 0:150;      % Define a time vector
+
+p1=stepplot(X1_over_u, t);
+setoptions(p1,'RiseTimeLimits',[0,1]);
+figure(4)
+p2=stepplot(X2_over_u, t);
+setoptions(p2,'RiseTimeLimits',[0,1]);
+
+info = stepinfo(X1_over_u);
+
+% Steady State error
+[y,t] = step(X1_over_u);
+sserror1 = abs(y(end)); %get the steady state error
+fprintf('Steady State error X1: %.3f\n', sserror1);
+[y2,t2] = step(X2_over_u);
+sserror2 = abs(y2(end)); %get the steady state error
+fprintf('Steady State error X2: %.3f\n', sserror2);
+
+%%%%%%%%%%%%%% req5,6,7: Simulation for input %%%%%%%%%%%%%%%%%
